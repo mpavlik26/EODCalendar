@@ -5,8 +5,8 @@ var CALENDAR_PAGERDUTY_ID = "zonky.cz_3439363838313737383333@resource.calendar.g
 var CALENDAR_AGILE_MEETINGS_ID = "zonky.cz_2d323130323133313933@resource.calendar.google.com";
 var CALENDAR_SEND_INVITES = true;
 
-var CALENDAR_TAKEOVER_MEETING_DEFAULT_GUESTS = ["iva.balhar@zonky.cz", "martin.pavlik@zonky.cz", "katerina.jenikova@zonky.cz", "katerina.matkova@zonky.cz", "zuzana.tokolyova@zonky.cz"];
-var CALENDAR_REGULAR_MEETING_DEFAULT_GUESTS = ["iva.balhar@zonky.cz", "katerina.jenikova@zonky.cz", "katerina.matkova@zonky.cz", "zuzana.tokolyova@zonky.cz"];
+var CALENDAR_TAKEOVER_MEETING_DEFAULT_GUESTS = ["iva.balhar@zonky.cz", "martin.pavlik@zonky.cz", "katerina.jenikova@zonky.cz", "katerina.matkova@zonky.cz", "petr.pokorny@airbank.cz"];
+var CALENDAR_REGULAR_MEETING_DEFAULT_GUESTS = ["iva.balhar@zonky.cz", "katerina.jenikova@zonky.cz", "katerina.matkova@zonky.cz", "zuzana.tokolyova@zonky.cz", "petr.pokorny@airbank.cz"];
 
 var CALENDAR_TAKEOVER_MEETING_TIME = (8 * 60 + 40) * 60 * 1000;
 var CALENDAR_REGULAR_MEETING_TIME = (8 * 60 + 50) * 60 * 1000;
@@ -29,6 +29,10 @@ var COLUMN_EMAIL_ADDRESSES = 27;
 var EMAIL_SUFFIX = "@zonky.cz";
 var EMAIL_FIRST_NAME_LAST_NAME_SEPARATOR = ".";
 var EMAILS_SEPARATOR = ",";
+
+var STRANGE_EMAILS_MAP = [//lower case with no diacritics
+  {firstName: "karel", lastName: "zelnicek", email: "karel.zelnicek2@airbank.cz"} 
+];
 
 
 var DIACRITICS_MAP = [
@@ -337,10 +341,25 @@ class Person{
   
   
   getEmailAddress(){
-    return (this.isNull()) ? "" : removeDiacritics(this.firstName.toLowerCase()) + EMAIL_FIRST_NAME_LAST_NAME_SEPARATOR + removeDiacritics(this.lastName.toLowerCase()) + EMAIL_SUFFIX;
+    if(this.isNull())
+      return "";
+
+    var strangeEmailAddress = this.getStrangeEmailAddress();
+  
+    return (strangeEmailAddress != "") ? strangeEmailAddress : (this.getFirstNameLowerCasedWithNoDiacritics() + EMAIL_FIRST_NAME_LAST_NAME_SEPARATOR + this.getLastNameLowerCasedWithNoDiacritics() + EMAIL_SUFFIX);
+  }
+  
+
+  getFirstNameLowerCasedWithNoDiacritics(){
+    return (this.isNull()) ? "" : removeDiacritics(this.firstName.toLowerCase());
   }
   
   
+  getLastNameLowerCasedWithNoDiacritics(){
+    return (this.isNull()) ? "" : removeDiacritics(this.lastName.toLowerCase());
+  }
+
+
   getName(){
     return this.firstName + " " + this.lastName; 
   }
@@ -368,8 +387,20 @@ class Person{
     return shiftStartDate;
   }
   
+
+  getStrangeEmailAddress(){//if person has a strange e-mail address, it's returned. "" is returned otherwise
+    var firstNameLowerCasedWithNoDiacritics = this.getFirstNameLowerCasedWithNoDiacritics();
+    var lastNameLowerCasedWithNoDiacritics = this.getLastNameLowerCasedWithNoDiacritics();
     
+    for(var i = 0; i < STRANGE_EMAILS_MAP.length; i++){
+      if(STRANGE_EMAILS_MAP[i].firstName == firstNameLowerCasedWithNoDiacritics && STRANGE_EMAILS_MAP[i].lastName == lastNameLowerCasedWithNoDiacritics)
+        return STRANGE_EMAILS_MAP[i].email;
+    }
+
+    return "";
+  }  
   
+
   isEOD(){
     return this.type.includes("EOD"); 
   }
