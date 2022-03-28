@@ -31,7 +31,9 @@ var EMAIL_FIRST_NAME_LAST_NAME_SEPARATOR = ".";
 var EMAILS_SEPARATOR = ",";
 
 var STRANGE_EMAILS_MAP = [//lower case with no diacritics
-  {firstName: "karel", lastName: "zelnicek", email: "karel.zelnicek2@airbank.cz"} 
+  {firstName: "karel", lastName: "zelnicek", email: "karel.zelnicek2@airbank.cz"},
+  {firstName: "matej", lastName: "ferenc", email: "matej.ferenc@airbank.cz"},
+  {firstName: "michaela", lastName: "kubisova", email: "michaela.kubisova@airbank.cz"} 
 ];
 
 
